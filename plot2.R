@@ -4,15 +4,14 @@
 
 # data of given dates are from line: 66637 
 # total rows to read for 2 given dates: 2880
-data <- read.table("household_power_consumption.txt", skip = 66637, 
-                   nrows = 2880, col.names = c("date", "time", "Global_active_power", 
-                                               "Global_reactive_power", "Voltage", 
-                                               "Global_intensity", "Sub_metering_1", 
-                                               "Sub_metering_2", "Sub_metering_3"), 
-                   sep = ";")
+
+library(sqldf)
+data <- read.csv.sql("household_power_consumption.txt", 
+                     sql="select * from file where Date in ('1/2/2007','2/2/2007');", 
+                     header = TRUE, sep = ";")
 
 # combining date and time column and changing char class to datetime class.
-datetime <- strptime(paste(data$date, data$time, sep=" "), 
+datetime <- strptime(paste(data$Date, data$Time, sep=" "), 
                      "%d/%m/%Y %H:%M:%S")
 
 # setting png graphic device
@@ -23,6 +22,5 @@ global_active_power <- as.numeric(data$Global_active_power)
 plot(datetime, global_active_power, type = "l", xlab = "", 
      ylab = "Global Active Power (kilowatts)")
 
-print(dev.cur())
 # closing graphic device 
 dev.off()
